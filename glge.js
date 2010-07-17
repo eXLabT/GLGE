@@ -4801,9 +4801,16 @@ GLGE.Scene.prototype.ray=function(origin,direction){
 			if(objects[i].pickable) objects[i].GLRender(gl,GLGE.RENDER_PICK,i+1);
 		}
 		gl.flush();
+		//LTXMOD_BEGIN(based on http://asalga.wordpress.com/2010/07/14/compensating-for-webgl-readpixels-spec-changes/)
 		var data=gl.readPixels(0, 0, 4, 1, gl.RGBA, gl.UNSIGNED_BYTE);
+		if(!data){
+			data = new WebGLUnsignedByteArray(4 * 1 * 4);
+			gl.readPixels(0, 0, 4, 1, gl.RGBA, gl.UNSIGNED_BYTE,data);
+		}
+		//var data=gl.readPixels(0, 0, 4, 1, gl.RGBA, gl.UNSIGNED_BYTE);
 		//TODO: firefox hack :-( remove when fixed!
-		if(data.data) data=data.data;
+		//if(data.data) data=data.data;
+		//LTXMOD_END
 		var norm=[data[4]/255,data[5]/255,data[6]/255];
 		var normalsize=Math.sqrt(norm[0]*norm[0]+norm[1]*norm[1]+norm[2]*norm[2])*0.5;
 		norm=[norm[0]/normalsize-1,norm[1]/normalsize-1,norm[2]/normalsize-1];
